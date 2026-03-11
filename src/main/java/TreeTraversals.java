@@ -1,4 +1,6 @@
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Utility class containing tree traversal algorithms for a {@link BinaryTree}.
@@ -76,6 +78,21 @@ public class TreeTraversals {
      */
     public static <V> void levelorder(BinaryTree<V> node, List<V> result) {
         // TODO: implement level-order traversal
-        throw new UnsupportedOperationException("levelorder: not yet implemented");
+        if (node == null) return;
+
+        Queue<BinaryTree<V>> queue = new LinkedList<>();
+        queue.add(node);
+
+        while (!queue.isEmpty()) {
+            BinaryTree<V> current = queue.poll();
+            result.add(current.getValue());
+
+            if (current.getLeft() != null)
+                queue.add(current.getLeft());
+
+            if (current.getRight() != null)
+                queue.add(current.getRight());
+        }
     }
-}
+}       
+
