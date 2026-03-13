@@ -68,7 +68,11 @@ public class HuffmanEncoding {
      */
     static Map<Character, Integer> buildFrequencyMap(String text) {
         // Hint: iterate over text.toCharArray() and use a HashMap
-        throw new UnsupportedOperationException("TODO: implement buildFrequencyMap");
+        Map<Character, Integer> map = new HashMap<>();
+        for (char  c : text.toCharArray()){
+            map.merge(c,1,Integer::sum);
+
+        }
     }
 
     // ----------------------------------------------------------------
@@ -92,7 +96,21 @@ public class HuffmanEncoding {
      */
     static Node buildTree(Map<Character, Integer> freqMap) {
         // Hint: use new PriorityQueue<>() — Node already implements Comparable
-        throw new UnsupportedOperationException("TODO: implement buildTree");
+        PriorityQueue<Node> queue = new PriorityQueue<>();
+        for(Map.Entry<Character, Integer> entry : freqMap.entrySet()){
+            Node n = new Node(entry.getKey(), entry.getValue());
+            queue.add(n);
+        }
+
+        while(queue.size() > 1){
+            Node last = queue.poll();
+            Node secondToLast = queue.poll();
+
+            Node newNode = new Node(last.freq+secondToLast.freq, last, secondToLast);
+            queue.add(newNode);
+        }
+
+        return queue.poll();
     }
 
     // ----------------------------------------------------------------
@@ -116,7 +134,13 @@ public class HuffmanEncoding {
      * @param codeTable map to populate: char → bit-string
      */
     static void buildCodeTable(Node node, String prefix, Map<Character, String> codeTable) {
-        throw new UnsupportedOperationException("TODO: implement buildCodeTable");
+        if(node.left == null && node.right == null){
+            codeTable.put(node.ch, prefix);
+            return;
+        }
+
+        buildCodeTable(node.left, "0", codeTable);
+        buildCodeTable(node.right,"1", codeTable);
     }
 
     // ----------------------------------------------------------------
@@ -134,7 +158,11 @@ public class HuffmanEncoding {
      * @return encoded bit-string (e.g. "010011101...")
      */
     static String encode(String text, Map<Character, String> codeTable) {
-        throw new UnsupportedOperationException("TODO: implement encode");
+        String encoded = "";
+       for (char c : text.toCharArray()){
+        encoded += codeTable.get(c);
+       }
+       return encoded;
     }
 
     // ----------------------------------------------------------------
@@ -154,7 +182,21 @@ public class HuffmanEncoding {
      * @return decoded original string
      */
     static String decode(String bits, Node root) {
-        throw new UnsupportedOperationException("TODO: implement decode");
+        String decoded = "";
+
+        Node current = root;
+        for(char c : bits.toCharArray()){
+            if(current.left == null && current.right == null){
+                decoded += current.ch;
+                current = root;
+                continue;
+            }
+            if (c == '0'){
+                current = current.left;
+            }else{
+                current = current.right;
+            }
+        }
     }
 
     // ----------------------------------------------------------------
@@ -179,7 +221,7 @@ public class HuffmanEncoding {
     public static void main(String[] args) {
 
         // --- Test 1: simple string ---
-        runTest("Hello Huffman!", "Simple string");
+        runTest("pablo clavo un clavito, en la calva de un calvito", "Simple string");
 
         // --- Test 2: repeated pattern (high compressibility) ---
         runTest("aaaaaabbbbcccdde", "Skewed frequencies");
